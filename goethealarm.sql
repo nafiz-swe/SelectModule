@@ -1,4 +1,4 @@
--- phpMyAdmin SQL Dump
+-- phuser_devicespMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
@@ -55,7 +55,7 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `subscription`, `plan_
 -- Table structure for table `user_devices`
 --
 
-CREATE TABLE `user_devices` (
+CREATE TABLE `` (
   `id` int(11) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `device_id` varchar(255) DEFAULT NULL,

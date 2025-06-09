@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🔔 Alarm Monitor</title>
+  <title>🔔 Alarm Monitor - {{ level|upper }}</title>
 </head>
 <body>
-  <h2>📡 Watching for "Select Module"...</h2>
-  <p>যখন সঠিক লেখা পাওয়া যাবে, তখন অ্যালার্ম বাজবে।</p>
+  <h2>📡 Watching for "Select Module" in {{ level|upper }}...</h2>
+  <p>যখন সঠিক লেখা পাওয়া যাবে, তখন অ্যালার্ম বাজবে এবং নতুন পেজ খুলবে।</p>
 
   <audio id="alarmAudio" src="{{ url_for('static', filename='alarm.mp3') }}" preload="auto"></audio>
 
   <script>
+    const level = "{{ level }}";
+    let alarmTriggered = false;
+
     function checkAudioTrigger() {
-      fetch('/check-audio')
+      if (alarmTriggered) return;
+      fetch(`/check-audio/${level}`)
         .then(res => res.json())
         .then(data => {
           if (data.play) {
+            alarmTriggered = true;
             const audio = document.getElementById('alarmAudio');
             audio.play();
-            console.log("🔔 Alarm playing");
-            clearInterval(audioInterval);
+            // নতুন ট্যাব খুলবে
+            window.open("{{ TARGET_URLS[level] }}", "_blank");
+            window.open("/alarm", "_blank");
+            console.log("🔔 Alarm playing and pages opened");
           }
         });
     }
 
-    const audioInterval = setInterval(checkAudioTrigger, 2000);
+    setInterval(checkAudioTrigger, 3000);
   </script>
 </body>
 </html>

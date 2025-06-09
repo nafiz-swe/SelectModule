@@ -128,15 +128,17 @@ def check_condition_and_open(level):
         try:
             driver.get(TARGET_URLS[level])
             time.sleep(1)
-            body_text = driver.page_source
-
+            
+            # Change this:
+            # body_text = driver.page_source
+            
+            # To this:
+            body_text = driver.find_element("tag name", "body").text
 
             if any(text in body_text for text in TRIGGER_TEXTS):
-                webbrowser.open_new_tab(TARGET_URLS[level])
-                webbrowser.open_new_tab("https://selectmodule.onrender.com/alarm")
+                # Trigger front-end to open tab and play alarm
                 trigger_audio[level] = True
                 watching[level] = False
-                click_screen_center()
                 print(f"✅ {level.upper()} - Select Module Found!")
             else:
                 print(f"❌ {level.upper()} - Not found.")
@@ -289,120 +291,18 @@ def set_alarm():
 
 
 
-@app.route('/start-watch/<level>') 
-def start_watch(level): 
-    normalized_level = level.replace("-", "_")  # হাইফেনকে আন্ডারস্কোরে বদলে দিলাম
-    
-    if normalized_level in watching and not watching[normalized_level]: 
-        watching[normalized_level] = True 
-        trigger_audio[normalized_level] = False 
+@app.route('/start-watch/<level>')
+def start_watch(level):
+    normalized_level = level.replace("-", "_")
+    if normalized_level in watching and not watching[normalized_level]:
+        watching[normalized_level] = True
+        trigger_audio[normalized_level] = False
         threading.Thread(target=check_condition_and_open, args=(normalized_level,)).start()
 
-        return f"""
-        <html>
-            <head>
-                <style>
-                    body {{
-                        background-color: #f0f8ff;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        margin: 0;
-                        font-family: Arial, sans-serif;
-                    }}
-                    .message-box {{
-                        background-color: #ffffff;
-                        padding: 30px;
-                        max-width: 600px;
-                        border: 2px solid #4CAF50;
-                        border-radius: 10px;
-                        text-align: center;
-                        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-                    }}
-                    .message-box h2 {{
-                        color: #4CAF50;
-                    }}
-                    .monitoring-page {{ 
-                        font-weight: bold;
-                        text-align: center;
-                        margin-bottom: 5px;
-                    }}
-                    .back-button {{
-                        margin-top: 20px;
-                        display: inline-block;
-                        padding: 10px 20px;
-                        background-color: #4CAF50;
-                        color: white;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        font-weight: bold;
-                    }}
-                    .back-button:hover {{
-                        background-color: #45a049;
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="message-box">
-                    <h2>Monitoring {normalized_level.upper()} level for 'Select Module'</h2>
-                    <p class="monitoring-page">Don't worry! Page changes won’t interrupt your monitoring.</p>
-                    <p style="text-align: justify; margin-top: 0;">
-                        When 'Select Module' is visible, your alarm will sound, and the registration page will automatically open easily within 5 seconds. If your internet is slow, it may take a maximum of 12 seconds for the alarm to ring and the registration page to open.
-                    </p> 
-                    <a href="/dashboard" class="back-button">← Back to Dashboard</a>
-                </div>
-            </body>
-        </html>
-        """
+        return render_template('watch.html', level=normalized_level, TARGET_URLS=TARGET_URLS)
+
     else:
-        return """
-        <html>
-            <head>
-                <style>
-                    body {
-                        background-color: #fff0f0;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        margin: 0;
-                        font-family: Arial, sans-serif;
-                    }
-                    .message-box {
-                        background-color: #ffffff;
-                        padding: 30px;
-                        border: 2px solid #ff4c4c;
-                        border-radius: 10px;
-                        text-align: center;
-                        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-                    }
-                    .message-box h2 {
-                        color: #4CAF50;
-                    }
-                    .back-button {
-                        margin-top: 20px;
-                        display: inline-block;
-                        padding: 10px 20px;
-                        background-color: #ff4c4c;
-                        color: white;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        font-weight: bold;
-                    }
-                    .back-button:hover {
-                        background-color: #e63939;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="message-box">
-                    <h2>Invalid request or already being monitored. Please wait.</h2>
-                    <a href="/dashboard" class="back-button">← Back to Dashboard</a>
-                </div>
-            </body>
-        </html>
-        """
+        return "Already monitoring or invalid request."
 
 
 
