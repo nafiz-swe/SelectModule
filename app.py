@@ -306,6 +306,12 @@ def alarm():
     alarm_file = session.get('alarm_file', '1-Morning.mp3')
     return render_template('alarm.html', alarm_file=alarm_file)
 
+@app.route("/alarm")
+def alarm_page():
+    # চাইলে এখানে dynamic ভাবে ফাইল দিতে পারো—for now, fixed file
+    alarm_file = "alarm1.mp3"  # static/audio/alarm1.mp3
+    return render_template("alarm.html", file=alarm_file)
+
 
 @app.route('/check-audio/<level>')
 def check_audio(level):
