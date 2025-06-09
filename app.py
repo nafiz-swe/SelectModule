@@ -1,18 +1,9 @@
-# from flask import Flask
-# app = Flask(__name__)
-
-# @app.route('/')
-# def home():
-#     return "Hello from EuroZoom!"
-
-# if __name__ == '__main__':
-#     app.run(host="0.0.0.0", debug=True)
-
 
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import psycopg2
 import threading
 import time
 import webbrowser
@@ -53,11 +44,11 @@ ALARM_LIST = [
 ]
 
 def get_db_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="goethe_alarm_db"
+    return psycopg2.connect(
+        host="dpg-d13agcjuibrs7380e3p0-a",
+        user="goethealarm_user",
+        password="C8LQZlObxUXWyT9CNFMkq8KZVh9M4nQm",
+        database="goethealarm"
     )
 
 # def get_db_connection():
@@ -130,13 +121,15 @@ def about():
 def contact():
     return render_template('contact.html')
 
+
+
 @app.route('/admin/eurozoom', methods=['GET', 'POST'])
 def admin_create_user():
     if request.method == 'POST':
         full_name = request.form['full_name']
         email = request.form['email']
         phone = request.form['phone']
-        subscription = request.form['subscription']  # নতুন subscription ইনপুট নিচ্ছি
+        subscription = request.form['subscription']
         plan_days = int(request.form['plan_days'])
         amount = float(request.form['amount'])
         start_date = request.form['start_date']
@@ -152,15 +145,14 @@ def admin_create_user():
             """, (full_name, email, phone, subscription, plan_days, amount, start_date, end_date, devices))
             conn.commit()
             msg = "User added successfully!"
-        except mysql.connector.Error as err:
+        except psycopg2.Error as err:
             msg = f"Error: {err}"
         finally:
             cursor.close()
             conn.close()
         return render_template('admin/eurozoom.html', message=msg)
-    
-    return render_template('admin/eurozoom.html')
 
+    return render_template('admin/eurozoom.html')
 
 
 
