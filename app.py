@@ -4,21 +4,23 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime
-import psycopg2
 import threading
 import time
 import webbrowser
 import uuid
 import os
+import psycopg2
+import urllib.parse as up
+from psycopg2.extras import RealDictCursor
 
 
 # Try importing pyautogui safely
-# try:
-#     import pyautogui
-#     PYAUTO_AVAILABLE = True
-# except Exception as e:
-#     print(f"⚠️ pyautogui could not be loaded: {e}")
-#     PYAUTO_AVAILABLE = False
+try:
+    import pyautogui
+    PYAUTO_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️ pyautogui could not be loaded: {e}")
+    PYAUTO_AVAILABLE = False
 
 app = Flask(__name__)
 app.secret_key = "f8a1d5b65cc9473d931b407ec8e8573b"
@@ -45,20 +47,55 @@ ALARM_LIST = [
 ]
 
 def get_db_connection():
+    up.uses_netloc.append("postgres")
+    url = up.urlparse("postgres://goethealarm_user:C8LQZlObxUXWyT9CNFMkq8KZVh9M4nQm@dpg-d13agcjuibrs7380e3p0-a.singapore-postgres.render.com/goethealarm")
+
     return psycopg2.connect(
-        host="dpg-d13agcjuibrs7380e3p0-a",
-        user="goethealarm_user",
-        password="C8LQZlObxUXWyT9CNFMkq8KZVh9M4nQm",
-        database="goethealarm"
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port or 5432
     )
 
-# def get_db_connection():
-#     return mysql.connector.connect(
-#         host="localhost",
-#         user="eurozoom",         # DB username
-#         password="EuroZoom@480",         # DB password
-#         database="goethealarm"
-#     )
+def create_table():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # users table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            full_name VARCHAR(255),
+            email VARCHAR(255) NOT NULL,
+            phone VARCHAR(20),
+            subscription VARCHAR(100),
+            plan_days INTEGER,
+            amount NUMERIC(10, 2),
+            start_date TIMESTAMP,
+            end_date TIMESTAMP,
+            devices TEXT,
+            is_active BOOLEAN DEFAULT TRUE
+        );
+    """)
+
+    # user_devices table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS user_devices (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255),
+            device_id VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Tables created successfully.")
+
+# এটা একবার কল করলেই যথেষ্ট
+create_table()
 
 def get_device_id():
     device_id = request.cookies.get("device_id")
@@ -96,7 +133,7 @@ def check_condition_and_open(level):
 
             if any(text in body_text for text in TRIGGER_TEXTS):
                 webbrowser.open_new_tab(TARGET_URLS[level])
-                webbrowser.open_new_tab("http://46.250.238.67:5000/alarm")
+                webbrowser.open_new_tab("https://selectmodule.onrender.com/alarm")
                 trigger_audio[level] = True
                 watching[level] = False
                 click_screen_center()
@@ -174,7 +211,7 @@ def login():
         identifier = request.form['identifier']
 
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT * FROM users
             WHERE (email = %s OR phone = %s) AND is_active = TRUE
@@ -216,15 +253,13 @@ def login():
     return render_template('login.html')
 
 
-
-
 @app.route('/dashboard')
 def dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT * FROM users WHERE email = %s", (session['email'],))
     user = cursor.fetchone()
     cursor.close()
@@ -236,6 +271,7 @@ def dashboard():
         session_alarm=session.get('alarm_file'),
         user=user
     )
+
 
 @app.route('/logout')
 def logout():
@@ -341,6 +377,9 @@ def start_watch(level):
                         text-align: center;
                         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
                     }
+                    .message-box h2 {
+                        color: #4CAF50;
+                    }
                     .back-button {
                         margin-top: 20px;
                         display: inline-block;
@@ -366,10 +405,12 @@ def start_watch(level):
         """
 
 
+
 @app.route('/alarm')
 def alarm():
     alarm_file = session.get('alarm_file', '1-Morning.mp3')
     return render_template('alarm.html', alarm_file=alarm_file)
+
 
 @app.route('/check-audio/<level>')
 def check_audio(level):
