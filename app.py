@@ -3,13 +3,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from datetime import datetime
 import psycopg2
 import threading
 import time
 import webbrowser
-import mysql.connector
 import uuid
 import os
+
 
 # Try importing pyautogui safely
 # try:
@@ -132,9 +133,17 @@ def admin_create_user():
         subscription = request.form['subscription']
         plan_days = int(request.form['plan_days'])
         amount = float(request.form['amount'])
-        start_date = request.form['start_date']
-        end_date = request.form['end_date']
-        devices = request.form['devices']
+
+        # এখানে start_date ও end_date নেওয়া হচ্ছে স্ট্রিং হিসেবে
+        start_date_str = request.form['start_date']
+        end_date_str = request.form['end_date']
+
+        # এখানে স্ট্রিং থেকে datetime অবজেক্টে কনভার্ট করবেন
+        from datetime import datetime
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%dT%H:%M")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%dT%H:%M")
+
+        devices = int(request.form['devices'])  # devices যদি সংখ্যায় নিতে চান তাহলে int করতে পারেন
 
         conn = get_db_connection()
         cursor = conn.cursor()
