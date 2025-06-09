@@ -1,9 +1,9 @@
-import requests
-from flask import render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime
+import requests
 import threading
 import time
 import webbrowser
@@ -102,6 +102,24 @@ def get_device_id():
     if not device_id:
         device_id = str(uuid.uuid4())
     return device_id
+
+
+def check_for_select_module(level):
+    # এই function টা তোমার যে লিঙ্কে চলছে সেখানে page চেক করবে
+    # level = 'b1' বা 'b2' বা 'kolkata_b1'
+    url = TARGET_URLS.get(level)
+    if not url:
+        return False
+    # Example: requests + BeautifulSoup দিয়ে চেক করা
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    # এখানে একটা hidden element বা button text চেক করতে পারো, যেটা "Select Module" রাখে
+    # উদাহরণ:
+    all_text = soup.get_text().lower()
+    if any(trigger_text.lower() in all_text for trigger_text in TRIGGER_TEXTS):
+        return True
+    return False
+
 
 def click_screen_center():
     if PYAUTO_AVAILABLE:
