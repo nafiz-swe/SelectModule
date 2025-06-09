@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🔔 Alarm Monitor</title>
+</head>
+<body>
+  <h2>📡 Watching for "Select Module"...</h2>
+  <p>যখন সঠিক লেখা পাওয়া যাবে, তখন অ্যালার্ম বাজবে।</p>
+
+  <audio id="alarmAudio" src="{{ url_for('static', filename='alarm.mp3') }}" preload="auto"></audio>
+
+  <script>
+    function checkAudioTrigger() {
+      fetch('/check-audio')
+        .then(res => res.json())
+        .then(data => {
+          if (data.play) {
+            const audio = document.getElementById('alarmAudio');
+            audio.play();
+            console.log("🔔 Alarm playing");
+            clearInterval(audioInterval);
+          }
+        });
+    }
+
+    const audioInterval = setInterval(checkAudioTrigger, 2000);
+  </script>
+</body>
+</html>

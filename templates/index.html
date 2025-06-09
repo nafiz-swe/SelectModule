@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+
+<!-- Banner section -->
+<section class="banner">
+  <img src="{{ url_for('static', filename='goethe-eurozoom.webp') }}" alt="Goethe Eurozoom Banner" />
+</section>
+
+<!-- Stats Cards -->
+<section class="stats-cards">
+  <div class="stat-card">
+    <div class="stat-number">24hr</div>
+    <div class="stat-title">Monitoring</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number count" data-target="53">0</div>
+    <div class="stat-title">Service Taken</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number count" data-target="37">0</div>
+    <div class="stat-title">Successfully Registered</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">24/7</div>
+    <div class="stat-title">Support</div>
+  </div>
+</section>
+<script>
+  const counters = document.querySelectorAll('.count');
+  const speed = 50;
+
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-target');
+      const count = +counter.innerText.replace('+', ''); // '+' remove kore number pabo
+
+      const increment = Math.ceil(target / speed);
+
+      if(count < target) {
+        counter.innerText = count + increment > target ? target : count + increment;
+        setTimeout(updateCount, 70);
+      } else {
+        counter.innerText = target + '+';
+      }
+    };
+
+    updateCount();
+  });
+</script>
+
+
+    <main>
+      <h1>Goethe Monitoring Plans</h1>
+      <p style="font-weight: bold;">Choose a plan that suits your needs and start monitoring today!</p>
+      <p style="margin-bottom: 2rem; text-align: justify;">Don't worry! Page changes won’t interrupt your monitoring.
+        When 'Select Module' is visible, your alarm will sound, and the registration page will automatically open easily within 5 seconds.
+        You’ll also be able to select the module and complete registration faster than others, In Sha Allah. 
+        If your internet is slow, it may take a maximum of 12 seconds for the alarm to ring and the registration page to open.
+        For any queries, please contact us at <a href="https://wa.me/8801737226404" target="_blank">01737-226404</a> (click on the number to join my WhatsApp).</p>
+        <div class="card-basic">
+          <div class="card-header header-basic">
+            <h1>Basic</h1>
+          </div>
+          <div class="card-body">
+            <p><h2>৳250 / 24 Hours</h2></p>
+            <div class="card-element-hidden-basic">
+              <ul class="card-element-container">
+                <li class="card-element">✓ 1 Device access</li>
+                <li class="card-element">✓ Any browser access</li>
+                <li class="card-element">✓ Customize alarm tone</li>
+                <li class="card-element">✓ 24/7 Support</li>
+              </ul>
+              <button class="btn btn-basic" href="https://wa.me/8801737226404" target="_blank">Start Now</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-standard">
+          <div class="card-header header-standard">
+            <h1>Standard</h1>
+          </div>
+          <div class="card-body">
+            <p><h2>৳395 / 3 Days</h2></p>
+            <div class="card-element-hidden-standard">
+              <ul class="card-element-container">
+                <li class="card-element">✓ 2 Device access</li>
+                <li class="card-element">✓ Any browser access</li>
+                <li class="card-element">✓ Customize alarm tone</li>
+                <li class="card-element">✓ 24/7 Support</li>
+              </ul>
+              <button class="btn btn-standard" href="https://wa.me/8801737226404" target="_blank">Start Now</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-advanced">
+          <div class="card-header header-advanced">
+            <h1>Advanced</h1>
+          </div>
+          <div class="card-body">
+            <p><h2>৳495 / 7 Days</h2></p>
+            <div class="card-element-hidden-advanced">
+              <ul class="card-element-container">
+                <li class="card-element">✓ 3 Device access</li>
+                <li class="card-element">✓ Any browser access</li>
+                <li class="card-element">✓ Customize alarm tone</li>
+                <li class="card-element">✓ 24/7 Support</li>
+              </ul>
+              <button class="btn btn-advanced" href="https://wa.me/8801737226404" target="_blank">Start Now</button>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="card-premium">
+            <div class="card-header header-premium">
+              <h1>Premium</h1>
+            </div>
+            <div class="card-body">
+              <p><h2>৳695 / 31 Days</h2></p>
+              <div class="card-element-hidden-premium">
+                <ul class="card-element-container">
+                    <li class="card-element">✓ 4 Device access</li>
+                    <li class="card-element">✓ Any browser access</li>
+                    <li class="card-element">✓ Customize alarm tone</li>
+                    <li class="card-element">✓ 24/7 Support</li>
+                </ul>
+                <button class="btn btn-premium" href="https://wa.me/8801737226404" target="_blank">Start Now</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-elite">
+            <div class="card-header header-elite">
+              <h1>Elite</h1>
+            </div>
+            <div class="card-body">
+              <p><h2>৳795 / 45 Days</h2></p>
+              <div class="card-element-hidden-elite">
+                <ul class="card-element-container">
+                  <li class="card-element">✓ 5 Device access</li>
+                  <li class="card-element">✓ Any browser access</li>
+                  <li class="card-element">✓ Customize alarm tone</li>
+                  <li class="card-element">✓ 24/7 Support</li>
+                </ul>
+                <button class="btn btn-elite" href="https://wa.me/8801737226404" target="_blank">Start Now</button>
+              </div>
+            </div>
+          </div>
+      </main>
+  
+      {% endblock %}

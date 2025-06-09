@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+
+<div class="admin-container">
+    <h2>Create User Account</h2>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <form method="POST">
+        <label>Full Name:</label>
+        <input type="text" name="full_name" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" required>
+
+        <label>Phone:</label>
+        <input type="text" name="phone">
+
+        <label>Subscription Plan:</label><br>
+        <select name="subscription" required>
+            <option value="Basic">Basic</option>
+            <option value="Standard">Standard</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Premium">Premium</option>
+            <option value="Elite">Elite</option>
+        </select><br>
+    
+        <label>Plan Days:</label><br>
+        <select name="plan_days" required>
+            <option value="1">24 Hours (250)</option>
+            <option value="3">3 Days (395)</option>
+            <option value="7">7 Days (495)</option>
+            <option value="31">31 Days (695)</option>
+            <option value="45">45 Days (795)</option>
+        </select><br>
+    
+        <label>Amount:</label><br>
+        <select name="amount" required>
+            <option value="250">250 (1d)</option>
+            <option value="395">395 (3d)</option>
+            <option value="495">495 (7d)</option>
+            <option value="695">695 (31d)</option>
+            <option value="795">795 (45d)</option>
+        </select><br>
+
+        <label>Devices:</label><br>
+        <select name="devices" required>
+            <option value="250">1 (1d)</option>
+            <option value="395">2 (3d)</option>
+            <option value="495">3 (7d)</option>
+            <option value="695">4 (31d)</option>
+            <option value="795">5 (45d)</option>
+        </select><br>
+    
+        <label>Start Date:</label><br>
+        <input type="datetime-local" name="start_date" required><br>
+    
+        <label>End Date:</label><br>
+        <input type="datetime-local" name="end_date" required><br><br>
+
+        <button type="submit" class="monitoring-btn">Create Account</button>
+    </form>
+</div>
+{% endblock %}

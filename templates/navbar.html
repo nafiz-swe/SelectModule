@@ -1,0 +1,26 @@
+<nav class="navbar">
+    <div class="navbar-container container">
+        <input type="checkbox" name="" id="">
+        <div class="hamburger-lines">
+            <span class="line line1"></span>
+            <span class="line line2"></span>
+            <span class="line line3"></span>
+        </div>
+        <ul class="menu-items">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            {% if 'email' in session %}
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/logout">Logout</a></li>
+            {% else %}
+            <li><a href="/login">Login</a></li>
+            {% endif %}
+        </ul>
+        <h1 class="logo">
+            <a href="/">
+                <img src="{{ url_for('static', filename='eurozoom-logo.gif') }}" alt="EuroZoom Logo" style="height: 40px;">
+            </a>
+        </h1>        
+    </div>
+</nav>

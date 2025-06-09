@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<style>
+.dashboard-section {
+    margin: 5rem auto;    
+    background: #fff;
+    border-radius: 8px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+}
+
+/* Button Start*/ 
+.monitoring-btn,
+.card a {
+  background: #00a6f4;
+  color: white;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0.4rem;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    0 0px 0 0 #0091db,
+    0 4px 0 0 #007acc,
+    0 6px 0 0 #006bbd,
+    0 8px 0 0 #005bab,
+    0 8px 16px 0 rgba(0, 166, 244, 0.5);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border: none;
+  display: inline-block;
+  margin-top: 1rem;
+  text-decoration: none;
+}
+.monitoring-btn::before,
+.card a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(0, 166, 244, 0.3),
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: shimmer 3s infinite;
+  filter: blur(1px);
+  pointer-events: none;
+  border-radius: 0.4rem;
+}
+.monitoring-btn:hover,
+.card a:hover {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,0.3),
+    0 1px 0 0 #00a6f4,
+    0 2px 0 0 #0091db,
+    0 3px 0 0 #007acc,
+    0 4px 0 0 #006bbd,
+    0 4px 8px 0 rgba(0, 166, 244, 0.5);
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Card styles */
+
+/* Card container */
+.card-container {
+  display: flex;
+  gap: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Card styling */
+.card {
+  background: #fff; /* Changed to white */
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  /* flex: 1 1 280px; */
+  max-width: 320px;
+  color: #004a8d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: box-shadow 0.3s ease;
+  cursor: default;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* subtle shadow */
+  position: relative;
+  overflow: hidden;
+}
+/* Removed hover shadow */
+
+/* Card heading */
+.card h2 {
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+  color: #000 !important;
+}
+
+/* Card paragraph */
+.card p {
+  color: #4a4141;
+  margin: 0 auto 1.5rem;
+}
+.card p span {
+  font-size: 0.85em;
+  margin-bottom: 0.625rem;
+  margin-top: 0;
+  background-color: #a0c814;
+  color: #0e2029;
+  padding: 1px 5px;
+  font-weight: 600;
+}
+
+/* User Info section */
+.user-info {
+  margin: 2rem auto;
+  background: linear-gradient(135deg, #e9f3ff, #ffffff);
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow:
+    0 10px 25px rgba(0, 100, 182, 0.2),
+    inset 0 0 0 1px rgba(0, 100, 182, 0.1);
+  max-width: 450px;
+  color: #003366;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* decorative border shine */
+.user-info::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 150%;
+  height: 150%;
+  background: linear-gradient(120deg, transparent, rgba(0,166,244,0.15), transparent);
+  transform: rotate(25deg);
+  pointer-events: none;
+}
+
+/* User Info header */
+.user-info h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #005a9c;
+  border-bottom: 2px solid #cce4ff;
+  padding-bottom: 0.5rem;
+}
+
+/* User Info paragraphs */
+.user-info p {
+  margin: 0.6rem 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  border-left: 4px solid #cce4ff;
+  padding-left: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 0.4rem;
+  transition: background 0.3s;
+}
+
+/* On hover glow effect */
+.user-info p:hover {
+  background: rgba(0, 166, 244, 0.08);
+}
+
+/* Bold field names */
+.user-info p strong {
+  color: #005a9c;
+  display: inline-block;
+  width: 130px;
+}
+
+/* Form styling */
+form {
+  margin-top: 1rem;
+  max-width: 400px;
+  margin-bottom: 1.5rem;
+}
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.alarm-settings p {
+  margin: 0;
+}
+.alarm-settings h1 {
+  margin-bottom: 1rem;
+}
+select {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid #00a6f4;
+  margin-bottom: 0;
+  font-size: 1rem;
+  color: #0064b6;
+  background: white;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Countdown */
+#countdown {
+  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 20px;
+  color: #ff5722;
+}
+
+/* Audio play element margin (for spacing above Save button) */
+#audio-play {
+  margin-top: 15px;
+}
+
+/* Monitoring button fix inside card */
+.monitoring-btn {
+  max-width: 100%; /* prevents overflow */
+  box-sizing: border-box;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .card {
+    max-width: 90vw;
+    padding: 1.5rem 2rem;
+  }
+}
+
+  </style>
+<section class="dashboard-section welcome-section">
+    <h1>Welcome, {{ user.full_name }}</h1>
+    <h4 id="countdown">⏳ Loading countdown...</h4>
+  </section>
+  
+  <section class="dashboard-section alarm-section">
+    <div class="alarm-settings">
+      <h1>Select Module Alarm Settings</h1>
+      <p>When found Select Module by hidden search then you hear alarm and auto open Goethe registration page.</p>
+    </div>
+    
+    <form method="POST" action="/set-alarm" class="alarm-form">
+      <label for="alarm-select">Choose alarm tone:</label>
+      <select id="alarm-select" name="alarm_choice" onchange="playSelectedAlarm()">
+        {% for file, name in alarms %}
+        <option value="{{ file }}" {% if session_alarm == file %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="monitoring-btn">Save Alarm</button>
+    </form>
+  
+    <!-- Audio player (hidden) -->
+    <audio id="alarm-audio" controls style="display: none;"></audio>
+  </section>
+  
+  <section class="dashboard-section monitoring-section">
+    <h1>Monitoring Select Module</h1>
+    <p class="monitoring-instruction">Please click the "Start Monitoring" button first, then open your monitoring page to begin tracking.</p>
+  
+    <div class="card-container">
+      <div class="card">
+        <h2>Dhaka Goethe B1</h2>
+        <p>Monitoring the hidden <span>SELECT MODULE</span></p>
+        <a href="/start-watch/b1" class="monitoring-btn">Start Monitoring</a>
+      </div>
+      <div class="card">
+        <h2>Dhaka Goethe B2</h2>
+        <p>Monitoring the hidden <span>SELECT MODULE</span></p>
+        <a href="/start-watch/b2" class="monitoring-btn">Start Monitoring</a>
+      </div>
+      <!-- Kolkata B1 Card -->
+      <div class="card">
+        <h2>Test: Kolkata Goethe B1</h2>
+        <p>Monitoring the hidden <span>SELECT MODULE</span></p>
+        <a href="/start-watch/kolkata-b1" class="monitoring-btn">Start Monitoring</a>
+      </div>
+    </div>
+  </section>
+  
+  
+  <section class="dashboard-section user-info-section">
+    <div class="user-info">
+      <h3>Your Information</h3>
+      <p><strong>Full Name:</strong> {{ user.full_name }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Phone:</strong> {{ user.phone }}</p>
+      <p><strong>Subscription:</strong> {{ user.subscription }}</p>
+      <p><strong>Plan Days:</strong> {{ user.plan_days }}</p>
+      <p><strong>Amount:</strong> {{ user.amount }}</p>
+      <p><strong>Device:</strong> {{ user.devices }}</p>
+      <p><strong>Start Date:</strong> {{ user.start_date.strftime('%d %B %Y, %I:%M %p') }}</p>
+      <p><strong>End Date:</strong> {{ user.end_date.strftime('%d %B %Y, %I:%M %p') }}</p>
+    </div>  
+  </section>
+  
+  <script>
+    function playSelectedAlarm() {
+      const select = document.getElementById("alarm-select");
+      const selectedFile = select.value;
+      const audioPlayer = document.getElementById("alarm-audio");
+  
+      audioPlayer.src = "/static/audio/" + selectedFile;
+      audioPlayer.style.display = "block";
+      audioPlayer.play();
+    }
+  
+    // Countdown Timer Script
+    const endTimeStr = "{{ user.end_date.strftime('%Y-%m-%dT%H:%M:%S') }}";
+    const endTime = new Date(endTimeStr);
+  
+    function disableMonitoringButtons() {
+      const buttons = document.querySelectorAll('.monitoring-btn');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = "none";
+        btn.style.opacity = "0.5";
+        btn.textContent = "Expired";
+      });
+    }
+  
+    function enableMonitoringButtons() {
+      const buttons = document.querySelectorAll('.monitoring-btn');
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.pointerEvents = "auto";
+        btn.style.opacity = "1";
+        btn.textContent = "Start Monitoring";
+      });
+    }
+  
+    function updateCountdown() {
+      const now = new Date();
+      const diff = endTime - now;
+  
+      if (diff <= 0) {
+        document.getElementById("countdown").textContent = 
+          "⏰ Subscription time is up! Your monitoring system will no longer work. Please activate your preferred subscription plan now—send a message on WhatsApp: 01737-226404";
+        disableMonitoringButtons();
+        return;
+      }
+  
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+  
+      document.getElementById("countdown").textContent =
+        `⏳ ${days} days ${hours} hrs ${minutes} mins ${seconds} secs left`;
+  
+      enableMonitoringButtons();
+    }
+  
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>  
+  
+{% endblock %}
