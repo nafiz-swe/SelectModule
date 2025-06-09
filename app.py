@@ -1,6 +1,6 @@
-
-
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
+import requests
+from flask import render_template, jsonify, request, redirect, url_for
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime
@@ -36,7 +36,7 @@ TARGET_URLS = {
 }
 
 ALARM_LIST = [
-    ("selectmodule_alarm.mp3", "Morning"),
+    ("1-Morning.mp3", "Morning"),
     ("2-MorningBird1.mp3", "Morning Bird-1"),
     ("3-MorningBird2.mp3", "Morning Bird-2"),
     ("7-Melody.mp3", "Melody"),
