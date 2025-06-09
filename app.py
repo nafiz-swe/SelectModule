@@ -36,7 +36,7 @@ TARGET_URLS = {
 }
 
 ALARM_LIST = [
-    ("1-Morning.mp3", "Morning"),
+    ("selectmodule_alarm.mp3", "Morning"),
     ("2-MorningBird1.mp3", "Morning Bird-1"),
     ("3-MorningBird2.mp3", "Morning Bird-2"),
     ("7-Melody.mp3", "Melody"),
@@ -301,21 +301,18 @@ def start_watch(level):
 
 
 
-@app.route('/alarm')
-def alarm():
-    alarm_file = session.get('alarm_file', '1-Morning.mp3')
-    return render_template('alarm.html', alarm_file=alarm_file)
-
 @app.route("/alarm")
-def alarm_page():
-    # চাইলে এখানে dynamic ভাবে ফাইল দিতে পারো—for now, fixed file
-    alarm_file = "alarm1.mp3"  # static/audio/alarm1.mp3
-    return render_template("alarm.html", file=alarm_file)
+def alarm():
+    return render_template("alarm.html")
 
-
-@app.route('/check-audio/<level>')
+@app.route("/check-audio/<level>")
 def check_audio(level):
-    return jsonify({"play": trigger_audio.get(level, False)})
+    # এখানে শর্ত বসান, উদাহরণ:
+    if level.lower() == "b1":
+        # যদি condition match করে
+        return jsonify({"play": True})
+    return jsonify({"play": False})
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

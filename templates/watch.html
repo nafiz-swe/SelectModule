@@ -7,30 +7,42 @@
   <h2>📡 Watching for "Select Module" in {{ level|upper }}...</h2>
   <p>যখন সঠিক লেখা পাওয়া যাবে, তখন অ্যালার্ম বাজবে এবং নতুন পেজ খুলবে।</p>
 
-  <audio id="alarmAudio" src="{{ url_for('static', filename='alarm.mp3') }}" preload="auto"></audio>
+<!-- watch.html -->
+<audio id="alarm-audio" style="display: none;">
+  <source src="/static/audio/selectmodule_alarm.mp3" type="audio/mpeg">
+</audio>
 
-  <script>
-    const level = "{{ level }}";
+<script>
+  const params = new URLSearchParams(location.search);
+  const level = params.get('watch') || '';
+
+  if (level) {
     let alarmTriggered = false;
 
-    function checkAudioTrigger() {
+    async function poll() {
       if (alarmTriggered) return;
-      fetch(`/check-audio/${level}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.play) {
-            alarmTriggered = true;
-            const audio = document.getElementById('alarmAudio');
-            audio.play();
-            // নতুন ট্যাব খুলবে
-            window.open("{{ TARGET_URLS[level] }}", "_blank");
-            window.open("/alarm", "_blank");
-            console.log("🔔 Alarm playing and pages opened");
-          }
-        });
+
+      const res = await fetch(`/check-audio/${level}`);
+      const data = await res.json();
+
+      if (data.play) {
+        alarmTriggered = true;
+
+        const audio = document.getElementById("alarm-audio");
+        const playPromise = audio.play();
+
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            alert("Click anywhere to hear alarm sound!");
+            document.body.addEventListener("click", () => audio.play());
+          });
+        }
+      }
     }
 
-    setInterval(checkAudioTrigger, 3000);
-  </script>
+    setInterval(poll, 3000);
+  }
+</script>
+
 </body>
 </html>
