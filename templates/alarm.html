@@ -1,16 +1,35 @@
-<!-- templates/alarm.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Alarm Triggered</title>
+    <title>Alarm Page</title>
 </head>
-<body style="text-align: center; padding-top: 100px; font-family: sans-serif;">
-  <h1>🔔 Alarm Triggered!</h1>
-  <p>Audio is playing now...</p>
-  <audio autoplay>
-    <source src="{{ url_for('static', filename='audio/selectmodule_alarm.mp3') }}" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+<body>
+    <h1>⏰ Monitoring...</h1>
+    <audio id="alarm-audio" src="/static/audio/{{ session_alarm }}" preload="auto"></audio>
+
+    <script>
+        const levels = ["b1", "b2", "kolkata_b1"];  // সব লেভেল
+        const audio = document.getElementById("alarm-audio");
+        let triggered = false;
+
+        function checkAudio(level) {
+            fetch(`/check-audio/${level}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.play && !triggered) {
+                        triggered = true;
+                        audio.play();
+                        console.log(`🔊 Playing for ${level}`);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        setInterval(() => {
+            levels.forEach(level => {
+                checkAudio(level);
+            });
+        }, 2000);  // প্রতি ২ সেকেন্ডে চেক করা হচ্ছে
+    </script>
 </body>
 </html>

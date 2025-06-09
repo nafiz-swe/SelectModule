@@ -307,9 +307,9 @@ def alarm():
 
 @app.route("/check-audio/<level>")
 def check_audio(level):
-    # এখানে শর্ত বসান, উদাহরণ:
-    if level.lower() == "b1":
-        # যদি condition match করে
+    level = level.lower()
+    if level in trigger_audio and trigger_audio[level]:
+        trigger_audio[level] = False  # বাজানোর পরে false করে দিচ্ছি যেন আবার না বাজে
         return jsonify({"play": True})
     return jsonify({"play": False})
 

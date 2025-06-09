@@ -380,36 +380,41 @@ select {
     setInterval(updateCountdown, 1000);
   </script>  
 <script>
-  const level = "{{ request.args.get('watch', '') }}";
-  const alarmFile = "{{ session['alarm'] }}"; // audio filename like "alarm1.mp3"
+const level = "{{ request.args.get('watch', '') }}";
+const alarmFile = "{{ session['alarm'] }}"; // alarm mp3 filename
 
-  const urls = {
-    b1: "https://www.goethe.de/ins/bd/en/spr/prf/gzb1.cfm",
-    b2: "https://www.goethe.de/ins/bd/en/spr/prf/gzb2.cfm",
-    kolkata_b1: "https://www.goethe.de/ins/in/en/sta/kol/prf/gzb1.cfm"
-  };
+const urls = {
+  b1: "https://www.goethe.de/ins/bd/en/spr/prf/gzb1.cfm",
+  b2: "https://www.goethe.de/ins/bd/en/spr/prf/gzb2.cfm",
+  kolkata_b1: "https://www.goethe.de/ins/in/en/sta/kol/prf/gzb1.cfm"
+};
 
-  if (level) {
-    const pageURL = urls[level];
-    const checkInterval = setInterval(() => {
-      fetch(`/check-audio/${level}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.play) {
-            // Play audio from static/audio
-            const audio = new Audio(`/static/audio/${alarmFile}`);
-            audio.play();
+if (level) {
+  const pageURL = urls[level];
+  const checkInterval = setInterval(() => {
+    fetch(`/check-audio/${level}`)
+      .then(response => response.json())
+      .then(data => {
+        // Check if data.play is true AND data contains exact "Select Module" found
+        if (data.play && data.foundSelectModule === true) {
+          // Play audio with user interaction check workaround
+          const audio = new Audio(`/static/audio/${alarmFile}`);
 
-            // Open Goethe page
-            if (pageURL) {
-              window.open(pageURL, '_blank');
-            }
+          audio.play().catch((error) => {
+            console.log("Audio play failed, waiting for user interaction.");
+            // Show a message or button to user to click for enabling sound
+          });
 
-            clearInterval(checkInterval); // stop checking after trigger
+          if (pageURL) {
+            window.open(pageURL, '_blank');
           }
-        });
-    }, 3000); // every 3 seconds
-  }
+
+          clearInterval(checkInterval);
+        }
+      });
+  }, 3000);
+}
+
 </script>
 
 {% endblock %}
