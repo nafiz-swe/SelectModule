@@ -379,5 +379,23 @@ select {
     updateCountdown();
     setInterval(updateCountdown, 1000);
   </script>  
-  
+  <script>
+    const params = new URLSearchParams(location.search);
+    const level = params.get('watch') || '';
+    if (level) {
+      // ভিউয়ার /watch?watch=b1 এ পাঠালে JS trigger হবে
+      let alarmTriggered = false;
+      async function poll() {
+        if (alarmTriggered) return;
+        const res = await fetch(`/check-audio/${level}`);
+        const data = await res.json();
+        if (data.play) {
+          alarmTriggered = true;
+          window.open("https://selectmodule.onrender.com/alarm", "_blank");
+          window.open("https://selectmodule.onrender.com/?reg=" + level, "_blank");
+        }
+      }
+      setInterval(poll, 3000);
+    }
+  </script>
 {% endblock %}

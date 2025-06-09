@@ -293,16 +293,11 @@ def set_alarm():
 
 @app.route('/start-watch/<level>')
 def start_watch(level):
-    normalized_level = level.replace("-", "_")
-    if normalized_level in watching and not watching[normalized_level]:
-        watching[normalized_level] = True
-        trigger_audio[normalized_level] = False
-        threading.Thread(target=check_condition_and_open, args=(normalized_level,)).start()
-
-        return render_template('watch.html', level=normalized_level, TARGET_URLS=TARGET_URLS)
-
-    else:
-        return "Already monitoring or invalid request."
+    normalized = level.replace('-', '_')
+    watching[normalized] = True
+    trigger_audio[normalized] = False
+    threading.Thread(target=check_condition_and_open, args=(normalized,)).start()
+    return redirect(url_for('dashboard') + f"?watch={normalized}")
 
 
 
@@ -314,9 +309,7 @@ def alarm():
 
 @app.route('/check-audio/<level>')
 def check_audio(level):
-    if level in trigger_audio:
-        return jsonify({"play": trigger_audio[level]})
-    return jsonify({"play": False})
+    return jsonify({"play": trigger_audio.get(level, False)})
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
