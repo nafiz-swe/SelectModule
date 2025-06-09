@@ -21,12 +21,12 @@ import uuid
 import os
 
 # Try importing pyautogui safely
-try:
-    import pyautogui
-    PYAUTO_AVAILABLE = True
-except Exception as e:
-    print(f"⚠️ pyautogui could not be loaded: {e}")
-    PYAUTO_AVAILABLE = False
+# try:
+#     import pyautogui
+#     PYAUTO_AVAILABLE = True
+# except Exception as e:
+#     print(f"⚠️ pyautogui could not be loaded: {e}")
+#     PYAUTO_AVAILABLE = False
 
 app = Flask(__name__)
 app.secret_key = "f8a1d5b65cc9473d931b407ec8e8573b"
